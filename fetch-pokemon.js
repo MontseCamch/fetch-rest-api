@@ -1,8 +1,5 @@
 const BASE_URL = 'https://pokeapi.co/api/v2/';
-
-/*fetch(BASE_URL + "pokemon/" + 1)
-.then(res => res.json())
-.then((data) => console.log(data));*/
+const cardsContainer = document.getElementsByClassName(".cardsContainer");
 
 const fetchPokemon = async (pokemon) => {
     try{
@@ -20,6 +17,13 @@ document.getElementById("get-btn").addEventListener('click', async () => {
     const text = document.getElementById("pokemon-name").value.toLowerCase();
     const pokemon = await fetchPokemon(text);
     localStorage.setItem("currentPokemonId", pokemon.id);//Almacena el ID del pokemon en Local storage
+    createCard(pokemon);
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const storedId = localStorage.getItem('currentPokeId');
+    const initialId = storedId ? parseInt(storedId) : 1;
+    const pokemon = await fetchPokemon(initialId);
     console.log(pokemon.name);
 });
 
@@ -38,15 +42,26 @@ document.getElementById("next-btn").addEventListener("click", async () => {
     console.log(pokemon.name);
 });
 
-fetch("https://jsonplaceholder.typicode.com/posts", {
-    method: 'POST',
-    headers:{
-        "Content-type": "application/json; charset= UTF-8",
-    },
-    body: JSON.stringify({
-        title:"title 1",
-        body: "Lorem ipsum",
-        userId: 1,
-    }),
-}).then(res => res.json())
-.then(data => console.log(data));
+function createCard(pokemon) {
+    const card = document.createElement("div");
+    card.classList.add("card");
+
+    card.innerHTML = `
+            <div class = "card-img-container">
+            <img src="${pokemon.sprites}" alt="${pokemon.name}">
+            </div>
+            <div class="card">
+                <h3 class="card-title">${pokemon.name}</h3>
+                <p>${pokemon.id}</p>
+                <p>${pokemon.weight}</p>
+            </div>
+            
+    `;
+    
+    console.log(card)
+    //cardsContainer.appendChild(card);
+    return card;
+    
+}
+createCard(50); 
+console.log(createCard())
