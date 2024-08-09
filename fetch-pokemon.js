@@ -1,18 +1,6 @@
 const BASE_URL = 'https://pokeapi.co/api/v2/';
 const cardsContainer = document.getElementsByClassName(".cardsContainer");
 
-/*async function fetchPokemon(pokemon){
-    const response = await fetch(`${BASE_URL}pokemon/${pokemon}`,{
-        method:"GET",
-        headers:{
-        "Content-type":"application/json"
-        }
-    });
-    
-    const parseData=await response.json();
-    
-    return parseData;
-}*/
 
 const fetchPokemon = async (pokemon) => {
     try {
@@ -27,9 +15,6 @@ const fetchPokemon = async (pokemon) => {
 };
 
 
-
-
-
 document.getElementById("get-btn").addEventListener('click', async () => {
     const text = document.getElementById("pokemon-name").value.toLowerCase();
     const pokemon = await fetchPokemon(text);
@@ -38,9 +23,10 @@ document.getElementById("get-btn").addEventListener('click', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const storedId = localStorage.getItem('currentPokeId');
+    const storedId = localStorage.getItem('currentPokemonId');
     const initialId = storedId ? parseInt(storedId) : 1;
     const pokemon = await fetchPokemon(initialId);
+    createCard(pokemon);
 });
 
 document.getElementById("prev-btn").addEventListener("click", async () => {
@@ -49,18 +35,22 @@ document.getElementById("prev-btn").addEventListener("click", async () => {
     );
     const pokemon = await fetchPokemon(newId); 
     createCard(pokemon);
+    localStorage.removeItem(currentPokemonId);
+    localStorage.setItem("currentPokemonId", newId);
 });
 
 document.getElementById("next-btn").addEventListener("click", async () => {
     const currentPokemonId = parseInt(localStorage.getItem("currentPokemonId"));
     const newId = currentPokemonId + 1;
     const pokemon = await fetchPokemon(newId);
-    console.log(pokemon.name);
     createCard(pokemon);
+    localStorage.removeItem(currentPokemonId);
+    localStorage.setItem("currentPokemonId", newId);
 });
 
 function createCard(element) {
     const pokemonCard = document.querySelector(".pokemon-container");
+    pokemonCard.classList.add("card");
     const IMAGE_URL = element.sprites.front_default;
 
     const cardName = document.createElement("h3");
@@ -69,11 +59,11 @@ function createCard(element) {
     const cardWeight = document.createElement("p");
     const pokemonImage = document.createElement("img");
     pokemonImage.src = IMAGE_URL;
-    pokemonImage.alt = "User profile photo";
+    pokemonImage.alt = `Pokemon ${element.name}`;
 
     cardName.textContent = element.name;
-    cardId.textContent = element.id;
-    cardWeight.textContent = element.weight;
+    cardId.textContent = `ID: ${element.id}`;
+    cardWeight.textContent = `Weight: ${element.weight}`;
 
     pokemonCard.replaceChildren();
     pokemonCard.append(pokemonImage, cardName, cardId, cardWeight);
